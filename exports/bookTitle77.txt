@@ -1,0 +1,2 @@
+Export sintetico de teste para o fixture de path traversal (book_title=bookTitle77).
+Nenhum dado real de cliente esta presente neste arquivo.

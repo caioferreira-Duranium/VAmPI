@@ -648,3 +648,246 @@ paths:
                   message:
                     type: string
                     example: 'Book not found!'
+  /books/v1/{book_title}/cover:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - books
+      summary: Set a book cover from a remote URL
+      description: >-
+        Fetches the cover image from the given URL server-side and stores its
+        metadata against the book.
+      operationId: api_views.books.set_cover
+      parameters:
+        - name: book_title
+          in: path
+          description: book to set the cover for
+          required: true
+          schema:
+            type: string
+            example: 'bookTitle77'
+      requestBody:
+        description: Remote URL to fetch the cover image from
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cover_url:
+                  type: string
+                  example: 'https://example.test/covers/bookTitle77.png'
+        required: true
+      responses:
+        '200':
+          description: Successfully fetched the cover
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'success'
+                  content_type:
+                    type: string
+                    example: 'image/png'
+                  size:
+                    type: number
+                    example: 10240
+        '400':
+          description: Invalid request
+          content: {}
+        '401':
+          description: User not authorized
+          content: {}
+  /books/v1/{book_title}/export:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - books
+      summary: Export the book's stored report file
+      description: Reads the named export file for the book from the exports directory.
+      operationId: api_views.books.export_book
+      parameters:
+        - name: book_title
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'bookTitle77'
+        - name: file
+          in: query
+          description: export file name, defaults to {book_title}.txt
+          required: false
+          schema:
+            type: string
+            example: 'bookTitle77.txt'
+      responses:
+        '200':
+          description: Successfully exported the book report
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'success'
+                  content:
+                    type: string
+        '401':
+          description: User not authorized
+          content: {}
+        '404':
+          description: Export file not found
+          content: {}
+  /users/v1/{username}/preferences/import:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - users
+      summary: Import a serialized preferences blob
+      description: >-
+        Restores a user's preferences from a base64-encoded, serialized blob
+        previously exported from the client.
+      operationId: api_views.users.import_preferences
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'name1'
+      requestBody:
+        description: base64-encoded serialized preferences
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                preferences_blob:
+                  type: string
+        required: true
+      responses:
+        '200':
+          description: Successfully imported preferences
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'success'
+                  username:
+                    type: string
+                    example: 'name1'
+                  data:
+                    type: object
+        '400':
+          description: Invalid preferences blob
+          content: {}
+        '401':
+          description: User not authorized
+          content: {}
+  /reports/v1/diagnostics:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - reports
+      summary: Run a network diagnostics check
+      description: Runs a ping against the given host for connectivity troubleshooting.
+      operationId: api_views.reports.diagnostics
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                host:
+                  type: string
+                  example: '127.0.0.1'
+        required: true
+      responses:
+        '200':
+          description: Diagnostics output
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'success'
+                  output:
+                    type: string
+        '401':
+          description: User not authorized
+          content: {}
+  /reports/v1/render-banner:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - reports
+      summary: Render a custom welcome banner
+      description: Renders a client-supplied template string for a custom welcome banner.
+      operationId: api_views.reports.render_banner
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                template:
+                  type: string
+                  example: 'Welcome back!'
+        required: true
+      responses:
+        '200':
+          description: Rendered banner
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'success'
+                  rendered:
+                    type: string
+        '401':
+          description: User not authorized
+          content: {}
+  /reports/v1/partner-status:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - reports
+      summary: Credit-bureau partner integration status
+      description: Returns the status of the mocked credit-bureau partner integration.
+      operationId: api_views.reports.partner_status
+      responses:
+        '200':
+          description: Partner status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'success'
+                  partner:
+                    type: string
+                    example: 'credit-bureau-sandbox'
+                  partner_api_key:
+                    type: string
+        '401':
+          description: User not authorized
+          content: {}

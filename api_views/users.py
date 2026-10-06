@@ -1,4 +1,6 @@
 import re
+import base64
+import pickle
 import jsonschema
 import jwt
 
@@ -220,3 +222,24 @@ def delete_user(username):
                 return Response(error_message_helper("User not found!"), 404, mimetype="application/json")
         else:
             return Response(error_message_helper("Only Admins may delete users!"), 401, mimetype="application/json")
+
+
+def import_preferences(username):
+    resp = token_validator(request.headers.get('Authorization'))
+    if "error" in resp:
+        return Response(error_message_helper(resp), 401, mimetype="application/json")
+    request_data = request.get_json()
+    # Insecure deserialization: the client-supplied blob is unpickled directly,
+    # a classic Python remote-code-execution sink. No ownership check against
+    # resp['sub'] either, so any authenticated user can target any username.
+    try:
+        encoded_blob = request_data.get('preferences_blob', '')
+        preferences = pickle.loads(base64.b64decode(encoded_blob))
+    except Exception:
+        return Response(error_message_helper("Invalid preferences blob."), 400, mimetype="application/json")
+    responseObject = {
+        'status': 'success',
+        'username': username,
+        'data': preferences
+    }
+    return Response(json.dumps(responseObject), 200, mimetype="application/json")
