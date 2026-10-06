@@ -891,3 +891,203 @@ paths:
         '401':
           description: User not authorized
           content: {}
+  /integrations/v1/catalog:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - integrations
+      summary: Import a partner book catalog (XML)
+      description: Parses a client-supplied XML catalog document and returns its title.
+      operationId: api_views.integrations.import_catalog
+      requestBody:
+        content:
+          application/xml:
+            schema:
+              type: string
+              example: '<catalog><title>Partner Catalog</title></catalog>'
+        required: true
+      responses:
+        '200':
+          description: Parsed catalog
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'success'
+                  title:
+                    type: string
+        '400':
+          description: Malformed XML document
+          content: {}
+        '401':
+          description: User not authorized
+          content: {}
+  /integrations/v1/config:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - integrations
+      summary: Load a YAML configuration snippet
+      description: Parses a client-supplied YAML configuration document.
+      operationId: api_views.integrations.load_config
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                config:
+                  type: string
+                  example: 'timeout: 30'
+        required: true
+      responses:
+        '200':
+          description: Parsed config
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'success'
+                  config:
+                    type: string
+        '401':
+          description: User not authorized
+          content: {}
+  /integrations/v1/eval:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - integrations
+      summary: Evaluate a risk-scoring expression
+      description: Evaluates a client-supplied arithmetic expression for ad-hoc risk scoring.
+      operationId: api_views.integrations.run_expression
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expression:
+                  type: string
+                  example: '1 + 1'
+        required: true
+      responses:
+        '200':
+          description: Evaluation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'success'
+                  result:
+                    type: string
+        '401':
+          description: User not authorized
+          content: {}
+  /integrations/v1/imagemath:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - integrations
+      summary: Compute an image-processing expression
+      description: Evaluates a client-supplied PIL ImageMath expression for document thumbnails.
+      operationId: api_views.integrations.calculate_image_metric
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                expression:
+                  type: string
+                  example: '1 + 1'
+        required: true
+      responses:
+        '200':
+          description: Computed result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'success'
+                  result:
+                    type: string
+        '401':
+          description: User not authorized
+          content: {}
+  /integrations/v1/redirect:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - integrations
+      summary: Redirect to a partner URL
+      description: Redirects the client to the given partner URL after a successful handoff.
+      operationId: api_views.integrations.redirect_to_partner
+      parameters:
+        - name: next
+          in: query
+          schema:
+            type: string
+          example: '/dashboard'
+      responses:
+        '302':
+          description: Redirect
+          content: {}
+        '401':
+          description: User not authorized
+          content: {}
+  /integrations/v1/restore:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - integrations
+      summary: Restore a backup archive
+      description: Restores a base64-encoded zip archive of user preferences.
+      operationId: api_views.integrations.restore_backup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                archive:
+                  type: string
+                  description: Base64-encoded zip archive
+        required: true
+      responses:
+        '200':
+          description: Restore result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'success'
+                  message:
+                    type: string
+        '400':
+          description: Invalid archive
+          content: {}
+        '401':
+          description: User not authorized
+          content: {}

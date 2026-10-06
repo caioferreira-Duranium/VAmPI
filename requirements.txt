@@ -15,3 +15,11 @@ Werkzeug==2.2.2
 Jinja2==3.0.3
 # requests 2.25.1 - CVE-2023-32681 (leaks Proxy-Authorization header on cross-host redirect), fixed in 2.31.0. Used by books.set_cover.
 requests==2.25.1
+# Batch 2: SCA fixtures tied to new vulnerable sinks in api_views/integrations.py.
+# PyYAML 5.3 - CVE-2020-1747 / CVE-2020-14343 (arbitrary code execution via full_load/FullLoader on untrusted input), fixed in 5.3.1/5.4. Used by integrations.load_config (yaml.Loader, also unsafe regardless of version).
+PyYAML==5.3
+# lxml 5.0.0 - no known-CVE pin here (older vulnerable releases fail to build against this image's libxml2);
+# the critical finding is the XXE sink itself in integrations.import_catalog, not this dependency's version.
+lxml==5.0.0
+# Pillow 8.4.0 - CVE-2022-22817 (PIL.ImageMath.eval() allows arbitrary code execution via crafted expression), fixed in 9.0.0. Used by integrations.calculate_image_metric.
+Pillow==8.4.0
