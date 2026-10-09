@@ -23,3 +23,6 @@ PyYAML==5.3
 lxml==5.0.0
 # Pillow 8.4.0 - CVE-2022-22817 (PIL.ImageMath.eval() allows arbitrary code execution via crafted expression), fixed in 9.0.0. Used by integrations.calculate_image_metric.
 Pillow==8.4.0
+# cryptography - no CVE pin; used by reports.sign_webhook_payload to load the
+# hardcoded RSA key (CWE-321 / gitleaks "private-key" critical finding).
+cryptography

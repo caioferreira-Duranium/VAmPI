@@ -891,6 +891,41 @@ paths:
         '401':
           description: User not authorized
           content: {}
+  /reports/v1/sign-webhook:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - reports
+      summary: Sign an outbound partner webhook payload
+      description: Signs a client-supplied payload with the credit-bureau partner webhook signing key.
+      operationId: api_views.reports.sign_webhook_payload
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                payload:
+                  type: string
+                  example: '{"event":"score.updated"}'
+        required: true
+      responses:
+        '200':
+          description: Signature
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'success'
+                  signature:
+                    type: string
+        '401':
+          description: User not authorized
+          content: {}
   /integrations/v1/catalog:
     post:
       security:
