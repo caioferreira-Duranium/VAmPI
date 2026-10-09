@@ -743,6 +743,53 @@ paths:
         '404':
           description: Export file not found
           content: {}
+  /books/v1/{book_title}/export/backup:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - books
+      summary: Back up the book's export file to GitHub
+      description: Pushes the named export file to a private GitHub backup repository.
+      operationId: api_views.books.backup_export
+      parameters:
+        - name: book_title
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'bookTitle77'
+        - name: file
+          in: query
+          description: export file name, defaults to {book_title}.txt
+          required: false
+          schema:
+            type: string
+            example: 'bookTitle77.txt'
+      responses:
+        '200':
+          description: Backup attempted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'success'
+                  book_title:
+                    type: string
+                  backup_status_code:
+                    type: integer
+        '401':
+          description: User not authorized
+          content: {}
+        '404':
+          description: Export file not found
+          content: {}
+        '502':
+          description: Backup provider unreachable
+          content: {}
   /users/v1/{username}/preferences/import:
     post:
       security:

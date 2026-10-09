@@ -1,4 +1,5 @@
 import os
+import base64
 import jsonschema
 import requests
 
@@ -11,6 +12,13 @@ from models.books_model import Book
 from app import vuln
 
 EXPORTS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'exports')
+
+# GitHub personal access token used to push export backups to a private repo
+# (CWE-798 / CWE-321: hardcoded credential). Generated solely as a throwaway
+# test fixture for this repository: never registered with GitHub, granted no
+# scope, and authenticates nothing beyond this PoC's own outbound call.
+EXPORT_BACKUP_GITHUB_TOKEN = "ghp_XMEsEGZOaMVIAqETKnKTk79eSAD6U9Jhun9a"
+EXPORT_BACKUP_REPO = "duranium-ops/vampi-export-backups"
 
 
 def get_all_books():
@@ -112,4 +120,43 @@ def export_book(book_title):
     except OSError as e:
         return Response(error_message_helper(str(e)), 404, mimetype="application/json")
     responseObject = {'status': 'success', 'book_title': book_title, 'content': content}
+    return Response(json.dumps(responseObject), 200, mimetype="application/json")
+
+
+def backup_export(book_title):
+    resp = token_validator(request.headers.get('Authorization'))
+    if "error" in resp:
+        return Response(error_message_helper(resp), 401, mimetype="application/json")
+    file_param = request.args.get('file', book_title + '.txt')
+    export_path = os.path.join(EXPORTS_DIR, file_param)
+    try:
+        with open(export_path, 'r') as f:
+            content = f.read()
+    except OSError as e:
+        return Response(error_message_helper(str(e)), 404, mimetype="application/json")
+    # Use of a hardcoded credential (CWE-798): every backup push authenticates
+    # with the same GitHub PAT committed to source, instead of a per-environment
+    # token pulled from a secret store.
+    github_api_url = f"https://api.github.com/repos/{EXPORT_BACKUP_REPO}/contents/{file_param}"
+    try:
+        backup_response = requests.put(
+            github_api_url,
+            headers={
+                'Authorization': f'token {EXPORT_BACKUP_GITHUB_TOKEN}',
+                'Accept': 'application/vnd.github+json'
+            },
+            json={
+                'message': f'backup: {file_param}',
+                'content': base64.b64encode(content.encode()).decode()
+            },
+            timeout=5
+        )
+        backup_status = backup_response.status_code
+    except requests.exceptions.RequestException as e:
+        return Response(error_message_helper(str(e)), 502, mimetype="application/json")
+    responseObject = {
+        'status': 'success',
+        'book_title': book_title,
+        'backup_status_code': backup_status
+    }
     return Response(json.dumps(responseObject), 200, mimetype="application/json")
