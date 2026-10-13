@@ -1173,3 +1173,231 @@ paths:
         '401':
           description: User not authorized
           content: {}
+  /admin/v1/search:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - admin
+      summary: Search users by username
+      description: Searches users by a partial username match for support/admin tooling.
+      operationId: api_views.admin_tools.search_users
+      parameters:
+        - name: username
+          in: query
+          schema:
+            type: string
+          example: 'name'
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'success'
+                  results:
+                    type: array
+                    items:
+                      type: object
+        '401':
+          description: User not authorized
+          content: {}
+  /admin/v1/trace:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - admin
+      summary: Run a traceroute diagnostics check
+      description: Runs a traceroute against the given host for connectivity troubleshooting.
+      operationId: api_views.admin_tools.trace_route
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                host:
+                  type: string
+                  example: '127.0.0.1'
+        required: true
+      responses:
+        '200':
+          description: Traceroute output
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'success'
+                  output:
+                    type: string
+        '401':
+          description: User not authorized
+          content: {}
+  /admin/v1/notes/encrypt:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - admin
+      summary: Encrypt a user note
+      description: Encrypts a client-supplied note for at-rest storage.
+      operationId: api_views.admin_tools.encrypt_note
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                note:
+                  type: string
+                  example: 'Call back about the overdue invoice.'
+        required: true
+      responses:
+        '200':
+          description: Encrypted note
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'success'
+                  ciphertext:
+                    type: string
+        '401':
+          description: User not authorized
+          content: {}
+  /admin/v1/users/{username}/reset-token:
+    post:
+      tags:
+        - admin
+      summary: Request a password-reset token
+      description: Issues a password-reset token for the given username.
+      operationId: api_views.admin_tools.request_reset_token
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 'name1'
+      responses:
+        '200':
+          description: Reset token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'success'
+                  reset_token:
+                    type: string
+        '404':
+          description: User not found
+          content: {}
+  /admin/v1/avatar:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - admin
+      summary: Upload a profile avatar
+      description: Uploads a base64-encoded avatar image under the given filename.
+      operationId: api_views.admin_tools.upload_avatar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filename:
+                  type: string
+                  example: 'avatar.png'
+                content_base64:
+                  type: string
+        required: true
+      responses:
+        '200':
+          description: Upload result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'success'
+                  path:
+                    type: string
+        '401':
+          description: User not authorized
+          content: {}
+  /admin/v1/audit/login-attempt:
+    post:
+      tags:
+        - admin
+      summary: Record a login attempt for auditing
+      description: Records a login attempt (username and source) for the security audit log.
+      operationId: api_views.admin_tools.audit_login_attempt
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: 'name1'
+        required: true
+      responses:
+        '200':
+          description: Attempt recorded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'success'
+                  message:
+                    type: string
+  /admin/v1/billing-status:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - admin
+      summary: Billing provider integration status
+      description: Returns the status of the mocked billing provider integration.
+      operationId: api_views.admin_tools.billing_status
+      responses:
+        '200':
+          description: Billing provider status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'success'
+                  provider:
+                    type: string
+                    example: 'billing-sandbox'
+                  provider_secret_key:
+                    type: string
+        '401':
+          description: User not authorized
+          content: {}
