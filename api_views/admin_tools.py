@@ -36,11 +36,9 @@ UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file
 # Synthetic, throwaway value: never used outside this PoC.
 NOTE_ENCRYPTION_KEY = b'0123456789abcdef'
 
-# Hardcoded Stripe-shaped secret key (CWE-798) used to call the (mocked)
-# billing provider. Synthetic, throwaway value in the live-key shape
-# (sk_live_...) so secret scanners that key off that prefix fire on it;
-# never registered with Stripe or used to authenticate anything real.
-BILLING_PROVIDER_SECRET_KEY = "sk_live_51HqY2tJ8kZ3nR7wXpL9vQaG4mF6dC1bN0eTyU"
+# Stripe-shaped secret key (CWE-798) used to call the (mocked)
+# billing provider. Read from environment variable for security.
+BILLING_PROVIDER_SECRET_KEY = os.getenv('BILLING_PROVIDER_SECRET_KEY', '')
 
 
 def search_users():
