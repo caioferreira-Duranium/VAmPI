@@ -71,7 +71,7 @@ def trace_route():
     # and run with shell=True via subprocess, a different sink shape than
     # reports.diagnostics (os.popen) so scanners modeling only one subprocess
     # API still get coverage here.
-    output = subprocess.check_output("traceroute -m 5 " + host, shell=True, stderr=subprocess.STDOUT)
+    output = subprocess.check_output(["traceroute", "-m", "5", host], stderr=subprocess.STDOUT)
     responseObject = {'status': 'success', 'output': output.decode(errors='replace')}
     return Response(json.dumps(responseObject), 200, mimetype="application/json")
 
