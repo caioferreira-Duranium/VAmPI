@@ -17,7 +17,7 @@ EXPORTS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 # (CWE-798 / CWE-321: hardcoded credential). Generated solely as a throwaway
 # test fixture for this repository: never registered with GitHub, granted no
 # scope, and authenticates nothing beyond this PoC's own outbound call.
-EXPORT_BACKUP_GITHUB_TOKEN = "ghp_XMEsEGZOaMVIAqETKnKTk79eSAD6U9Jhun9a"
+EXPORT_BACKUP_GITHUB_TOKEN = os.getenv('EXPORT_BACKUP_GITHUB_TOKEN')
 EXPORT_BACKUP_REPO = "duranium-ops/vampi-export-backups"
 
 
